@@ -11,27 +11,27 @@ screenGui.IgnoreGuiInset = true
 screenGui.ResetOnSpawn = false
 screenGui.Parent = playerGui
 
---// Container Frame (Outer Box)
+--// Container Frame
 local container = Instance.new("Frame")
 container.Size = UDim2.new(0, 420, 0, 150)
 container.Position = UDim2.new(0.5, 0, 0.5, 0)
 container.AnchorPoint = Vector2.new(0.5, 0.5)
-container.BackgroundColor3 = Color3.fromRGB(40, 40, 40) -- gray base
-container.BackgroundTransparency = 0.1 -- opacity tumaas, mas solid
+container.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+container.BackgroundTransparency = 0.1
 container.Parent = screenGui
 
 local corner = Instance.new("UICorner")
 corner.CornerRadius = UDim.new(0, 14)
 corner.Parent = container
 
---// Violet-ish Glow sa Gilid gamit UIStroke
+--// Violet Stroke
 local stroke = Instance.new("UIStroke")
 stroke.Parent = container
 stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 stroke.LineJoinMode = Enum.LineJoinMode.Round
 stroke.Thickness = 4
-stroke.Color = Color3.fromRGB(148, 0, 211) -- violet
-stroke.Transparency = 0.1 -- pareho opacity ng gray background
+stroke.Color = Color3.fromRGB(148, 0, 211)
+stroke.Transparency = 0.1
 
 local gradient = Instance.new("UIGradient")
 gradient.Parent = stroke
@@ -42,17 +42,51 @@ gradient.Color = ColorSequence.new{
 }
 gradient.Rotation = 360
 
---// Image on the Left
-local picture = Instance.new("ImageLabel")
-picture.Size = UDim2.new(0, 120, 0, 120)
-picture.Position = UDim2.new(0, 15, 0.5, 0)
-picture.AnchorPoint = Vector2.new(0, 0.5)
-picture.BackgroundTransparency = 1
-picture.Image = "rbxassetid://116749637853653"
-picture.ScaleType = Enum.ScaleType.Fit
-picture.Parent = container
+--==============================
+-- AVATAR + USER (ITAAS LANG)
+--==============================
 
--- Function to style text
+-- Avatar
+local avatar = Instance.new("ImageLabel")
+avatar.Size = UDim2.new(0, 90, 0, 90)
+avatar.Position = UDim2.new(0, 20, 0.36, 0) -- inangat
+avatar.AnchorPoint = Vector2.new(0, 0.5)
+avatar.BackgroundTransparency = 1
+avatar.ScaleType = Enum.ScaleType.Crop
+avatar.Parent = container
+
+local avatarCorner = Instance.new("UICorner")
+avatarCorner.CornerRadius = UDim.new(1, 0)
+avatarCorner.Parent = avatar
+
+-- Avatar border (bilog)
+local avatarStroke = Instance.new("UIStroke")
+avatarStroke.Parent = avatar
+avatarStroke.Thickness = 3
+avatarStroke.Color = Color3.fromRGB(180, 120, 255)
+avatarStroke.Transparency = 0.05
+
+-- Kunin avatar ng gumagamit
+local thumbType = Enum.ThumbnailType.HeadShot
+local thumbSize = Enum.ThumbnailSize.Size180x180
+local content = Players:GetUserThumbnailAsync(player.UserId, thumbType, thumbSize)
+avatar.Image = content
+
+-- Username (itaas din)
+local username = Instance.new("TextLabel")
+username.Text = "User: " .. player.Name
+username.Size = UDim2.new(0, 130, 0, 18)
+username.Position = UDim2.new(0, 10, 0.72, 0) -- inangat
+username.BackgroundTransparency = 1
+username.TextSize = 14
+username.TextColor3 = Color3.fromRGB(255,255,255)
+username.Font = Enum.Font.GothamSemibold
+username.TextWrapped = true
+username.Parent = container
+
+--==============================
+-- TEXT STYLE FUNCTION
+--==============================
 local function styleText(label, font, textSize)
 	label.Font = font
 	label.TextSize = textSize
@@ -107,12 +141,12 @@ shadow.Position = title.Position + UDim2.new(0, 2, 0, 2)
 shadow.ZIndex = title.ZIndex - 1
 shadow.Parent = container
 
---// Loading Bar Background (Gray path ng green)
+--// Loading Bar Background
 local barBG = Instance.new("Frame")
 barBG.Size = UDim2.new(0, 240, 0, 25)
 barBG.Position = UDim2.new(0, 150, 0.65, 0)
-barBG.BackgroundColor3 = Color3.fromRGB(40, 40, 40) -- gray same as container
-barBG.BackgroundTransparency = 0.1 -- same opacity
+barBG.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+barBG.BackgroundTransparency = 0.1
 barBG.BorderSizePixel = 0
 barBG.Parent = container
 
@@ -120,7 +154,7 @@ local barCorner = Instance.new("UICorner")
 barCorner.CornerRadius = UDim.new(0, 8)
 barCorner.Parent = barBG
 
---// Loading Bar Fill (Green, original)
+--// Loading Bar Fill
 local barFill = Instance.new("Frame")
 barFill.Size = UDim2.new(0, 0, 1, 0)
 barFill.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
@@ -141,7 +175,7 @@ percentText.BackgroundTransparency = 1
 percentText.Parent = barBG
 styleText(percentText, Enum.Font.GothamBlack, 18)
 
--- Typing Effect Function
+-- Typing Effect
 local function typeText(txt)
 	title.Text = ""
 	shadow.Text = ""
@@ -152,10 +186,10 @@ local function typeText(txt)
 	end
 end
 
--- Animation (EXACTLY 5 MINUTES)
+-- Animation (5 minutes)
 task.spawn(function()
 	typeText("Generating Script..")
-	local totalTime = 300 -- 5 minutes = 300 seconds
+	local totalTime = 300
 	local stepTime = totalTime / 100
 	for i = 0, 100 do
 		barFill:TweenSize(
